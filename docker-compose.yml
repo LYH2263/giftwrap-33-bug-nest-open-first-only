@@ -1,0 +1,17 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "9900:9900"
+    volumes:
+      - giftwrap_data:/data
+    environment:
+      DATA_DIR: /data
+  frontend:
+    build: ./frontend
+    ports:
+      - "4900:80"
+    depends_on:
+      - backend
+volumes:
+  giftwrap_data:
