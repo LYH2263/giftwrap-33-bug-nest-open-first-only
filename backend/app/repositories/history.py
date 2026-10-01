@@ -38,14 +38,8 @@ def list_runs(limit=50):
             "SELECT * FROM calc_runs ORDER BY id DESC LIMIT ?",
             (limit,),
         ).fetchall()
-        from app.services.nest_open_view import open_first_only
-        out = []
-        for r in rows:
-            d = _present(r)
-            d["result"] = open_first_only(d["result"], view="list")
-            d["total_paper_m2"] = d["result"].get("total_paper_m2", d.get("total_paper_m2"))
-            out.append(d)
-        return out
+        # 列表与详情同一展开：分盒全量 + 写入时派生的合计，不截首盒、不重算
+        return [_present(r) for r in rows]
     finally:
         c.close()
 
@@ -55,15 +49,8 @@ def get_run(run_id):
         row = c.execute("SELECT * FROM calc_runs WHERE id=?", (run_id,)).fetchone()
         if not row:
             return None
-        d = _present(row)
-        from app.services.nest_open_view import open_first_only, nest_projection
-        d["result"] = open_first_only(d["result"], view="detail")
-        if isinstance(d.get("result"), dict):
-            d["boxes"] = d["result"].get("boxes", [])
-            d["total_paper_m2"] = d["result"].get("total_paper_m2")
-            d["total_box_surface_m2"] = d["result"].get("total_box_surface_m2")
-            d["box_names"] = [b.get("name") for b in d["boxes"]]
-        return d
+        # 与列表同一份 _present 展开：boxes/total/box_names 全部来自写入快照
+        return _present(row)
     finally:
         c.close()
 

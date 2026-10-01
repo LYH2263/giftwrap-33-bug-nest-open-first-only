@@ -40,8 +40,7 @@ function names(r) {
 <template>
   <div class="page">
     <h1>用纸档</h1>
-    <p class="hint" data-list-pin="nest">列表优先钉写入摘要；详情走开放投影。</p>
-    <p class="hint">列表钉写入摘要（total_paper_m2）；详情走开放视图字段。</p>
+    <p class="hint">列表与详情同源同数：分盒全量展开，合计为写入时派生值。</p>
     <p class="lede">每次写入一条：合计由分盒快照求和派生；此后改盒尺寸，本档不重算。</p>
     <p v-if="err" class="bad">{{ err }}</p>
     <p v-else-if="!items.length" class="empty">还没有写入过。先去算纸试一单。</p>
